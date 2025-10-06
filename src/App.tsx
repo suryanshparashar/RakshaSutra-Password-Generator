@@ -54,24 +54,25 @@ function App() {
             return c1 + v + c2
         }
 
-        const syllables = Array.from({ length: 5 }, () => generateSyllable())
-        const capitalizeIndex = getSecureRandomInt(5)
+        const syllables = Array.from({ length: 6 }, () => generateSyllable())
 
-        syllables[capitalizeIndex] =
-            syllables[capitalizeIndex].charAt(0).toUpperCase() +
-            syllables[capitalizeIndex].slice(1)
+        const password = `${syllables[0]}${syllables[1]}-${syllables[2]}${syllables[3]}-${syllables[4]}${syllables[5]}`
 
-        const digit = getSecureRandomInt(10).toString()
+        const chars = password.split("")
 
-        const digitPosition = [
-            `${syllables[0]}-${syllables[1]}${digit}-${syllables[2]}-${syllables[3]}-${syllables[4]}`,
-            `${syllables[0]}${digit}-${syllables[1]}-${syllables[2]}-${syllables[3]}-${syllables[4]}`,
-            `${syllables[0]}-${syllables[1]}-${syllables[2]}${digit}-${syllables[3]}-${syllables[4]}`,
-            `${syllables[0]}-${syllables[1]}-${syllables[2]}-${syllables[3]}${digit}-${syllables[4]}`,
-            `${syllables[0]}-${syllables[1]}-${syllables[2]}-${syllables[3]}-${syllables[4]}${digit}`,
+        const letterIndices = chars
+            .map((char, idx) => (char !== "-" ? idx : -1))
+            .filter((idx) => idx !== -1)
+        const uppercaseIdx =
+            letterIndices[getSecureRandomInt(letterIndices.length)]
+        chars[uppercaseIdx] = chars[uppercaseIdx].toUpperCase()
+
+        const digitIdx = letterIndices.filter((idx) => idx !== uppercaseIdx)[
+            getSecureRandomInt(letterIndices.length - 1)
         ]
+        chars[digitIdx] = getSecureRandomInt(10).toString()
 
-        return digitPosition[getSecureRandomInt(5)]
+        return chars.join("")
     }, [])
 
     const generateRandomPassword = useCallback(
@@ -109,12 +110,15 @@ function App() {
     const calculateAppleStyleEntropy = useCallback((): number => {
         const consonants = 20
         const vowels = 6
+
         const entropyValue =
-            10 * Math.log2(consonants) +
-            5 * Math.log2(vowels) +
-            Math.log2(26) +
-            Math.log2(10) +
-            Math.log2(5)
+            Math.log2(18) + // position for uppercase
+            Math.log2(26) + // uppercase letter choice
+            Math.log2(17) + // position for digit (can't be same as uppercase)
+            Math.log2(10) + // digit choice
+            10 * Math.log2(consonants) + // 10 consonants (16 total - 6 vowels)
+            6 * Math.log2(vowels) // 6 vowels
+
         return Math.round(entropyValue * 10) / 10
     }, [])
 
@@ -180,33 +184,33 @@ function App() {
             showAlert("Copied to clipboard", "success")
             setTimeout(() => setCopied(false), 2000)
         } catch (err) {
-            showAlert("Failed to copy password", "error")
+            showAlert("Failed to copy password: " + err, "error")
         }
     }, [password, showAlert])
 
-    const getStrengthColor = useCallback(() => {
+    const getStrengthColor = useCallback((length: number) => {
         if (passwordType === "easytype") return "#10b981"
         if (length < 12) return "#ef4444"
         if (length < 16) return "#f59e0b"
         if (length < 20) return "#10b981"
         return "#06b6d4"
-    }, [length, passwordType])
+    }, [passwordType])
 
-    const getStrengthText = useCallback(() => {
+    const getStrengthText = useCallback((length: number) => {
         if (passwordType === "easytype") return "Strong"
         if (length < 12) return "Weak"
         if (length < 16) return "Medium"
         if (length < 20) return "Strong"
         return "Very Strong"
-    }, [length, passwordType])
+    }, [passwordType])
 
-    const getStrengthWidth = useCallback(() => {
+    const getStrengthWidth = useCallback((length: number) => {
         if (passwordType === "easytype") return "75%"
         if (length < 12) return "25%"
         if (length < 16) return "50%"
         if (length < 20) return "75%"
         return "100%"
-    }, [length, passwordType])
+    }, [passwordType])
 
     return (
         <div className="app-container">
@@ -304,7 +308,7 @@ function App() {
                                     }
                                     className="length-slider"
                                     style={{
-                                        background: `linear-gradient(to right, ${getStrengthColor()} 0%, ${getStrengthColor()} ${
+                                        background: `linear-gradient(to right, ${getStrengthColor(length)} 0%, ${getStrengthColor(length)} ${
                                             ((length - 8) / 24) * 100
                                         }%, #1e293b ${((length - 8) / 24) * 100}%, #1e293b 100%)`,
                                     }}
@@ -322,17 +326,17 @@ function App() {
                                         <div
                                             className="strength-bar-fill"
                                             style={{
-                                                width: getStrengthWidth(),
+                                                width: getStrengthWidth(length),
                                                 backgroundColor:
-                                                    getStrengthColor(),
+                                                    getStrengthColor(length),
                                             }}
                                         ></div>
                                     </div>
                                     <span
                                         className="strength-text"
-                                        style={{ color: getStrengthColor() }}
+                                        style={{ color: getStrengthColor(length) }}
                                     >
-                                        {getStrengthText()}
+                                        {getStrengthText(length)}
                                     </span>
                                 </div>
                             </div>
@@ -439,9 +443,9 @@ function App() {
                                     <span className="stat-label">Strength</span>
                                     <span
                                         className="stat-value"
-                                        style={{ color: getStrengthColor() }}
+                                        style={{ color: getStrengthColor(password.length) }}
                                     >
-                                        {getStrengthText()}
+                                        {getStrengthText(password.length)}
                                     </span>
                                 </div>
                             </div>
