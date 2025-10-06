@@ -44,5 +44,8 @@ export default defineConfig({
         assetFileNames: `[name].[ext]`
       }
     },
+  },
+  server: {
+    host: '0.0.0.0',
   }
 })

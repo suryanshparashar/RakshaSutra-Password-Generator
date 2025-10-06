@@ -17,7 +17,7 @@ body {
     min-height: 100vh;
     color: #e2e8f0;
     overflow-x: hidden;
-    width: 500px;
+    /* width: 500px; */
 }
 
 .app-container {
