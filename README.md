@@ -1,9 +1,9 @@
 # 🛡️ RakshaSutra
 
 [![Firefox Add-ons](https://img.shields.io/badge/Firefox-Install-orange?logo=firefox-browser)](https://addons.mozilla.org/firefox/addon/rakshasutra/)
-[![Chrome Web Store](https://img.shields.io/badge/Chrome-Install-green?logo=google-chrome)](https://chromewebstore.google.com/detail/rakshasutra/)
-[![Edge Add-ons](https://img.shields.io/badge/Edge-Install-blue?logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/rakshasutra/)
-[![Ulaa Add-ons](https://img.shields.io/badge/Ulaa-Install-yellow?logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/rakshasutra/)
+[![Chrome Web Store](https://img.shields.io/badge/Chrome-Install-green?logo=google-chrome)](https://chromewebstore.google.com/detail/rakshasutra-password-gene/kajookmmcahfpkmdhgkkdijppkdlganosffff)
+[![Edge Add-ons](https://img.shields.io/badge/Edge-Install-blue?logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/rakshasutra-password-gene/haokhllnanaalielaepkppgdanbjakdc)
+<!-- [![Ulaa Add-ons](https://img.shields.io/badge/Ulaa-Install-yellow?logo=microsoft-edge)](https://microsoftedge.microsoft.com/addons/detail/rakshasutra/) -->
 [![License](https://img.shields.io/badge/License-All%20Rights%20Reserved-red.svg)](LICENSE)
 
 > **A Protective Formula for Strong Passwords**
@@ -49,17 +49,17 @@ Install RakshaSutra today and experience the difference that true cryptographic 
 
 | Browser        | Link                                                                          | Availability |
 | -------------- | ----------------------------------------------------------------------------- | ------------ |
-| 🦊 **Firefox** | [Install Now](https://addons.mozilla.org/firefox/addon/rakshasutra/)          | Coming Soon    |
-| 🌐 **Chrome**  | [Install Now](https://chromewebstore.google.com/detail/rakshasutra/)          | Coming Soon  |
-| 🔷 **Edge**    | [Install Now](https://microsoftedge.microsoft.com/addons/detail/rakshasutra/) | Coming Soon  |
-| 🟡 **Ulaa**    | [Install Now](https://microsoftedge.microsoft.com/addons/detail/rakshasutra/) | Coming Soon  |
+| 🦊 **Firefox** | [Install Now](https://addons.mozilla.org/firefox/addon/rakshasutra/)          | Published    |
+| 🌐 **Chrome**  | [Install Now](https://chromewebstore.google.com/detail/rakshasutra-password-gene/kajookmmcahfpkmdhgkkdijppkdlgano)          | Published  |
+| 🔷 **Edge**    | [Install Now](https://microsoftedge.microsoft.com/addons/detail/rakshasutra-password-gene/haokhllnanaalielaepkppgdanbjakdc) | Published  |
+| 🟡 **Ulaa**    | [Install Now](https://chromewebstore.google.com/detail/rakshasutra-password-gene/kajookmmcahfpkmdhgkkdijppkdlgano) | Published  |
 
-### Mobile Support
+<!-- ### Mobile Support
 
 - ✅ **Kiwi Browser** (Android) - Install from Chrome Web Store
 - ⚠️ **Firefox Android** - Limited support (Mozilla approval required)
 - ❌ **Chrome Android** - Not supported by Google
-- ❌ **Safari iOS** - Not available
+- ❌ **Safari iOS** - Not available -->
 
 ## 🛠️ Technology Stack
 
@@ -85,8 +85,8 @@ RakshaSutra implements enterprise-grade security practices:
 | Method                  | Length   | Charset Size      | Entropy (bits) | Security Level |
 | ----------------------- | -------- | ----------------- | -------------- | -------------- |
 | Easy Type               | 20 chars | Syllable-based    | 75             | Strong ✅      |
-| Max Security (16 chars) | 16 chars | 90 (with special) | 104.9          |Strong ✅ |
-| Max Security (32 chars) | 32 chars | 90 (with special) | 209.7          | Very Strong ✅     |
+| Max Security (16 chars) | 16 chars | 90 (with special) | 104.9          | Strong ✅      |
+| Max Security (32 chars) | 32 chars | 90 (with special) | 209.7          | Very Strong ✅ |
 
 > NIST recommends 60+ bits of entropy for strong passwords. RakshaSutra exceeds this in all modes.
 
