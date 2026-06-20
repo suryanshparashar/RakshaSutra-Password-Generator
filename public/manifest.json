@@ -18,5 +18,5 @@
         "48": "logo.png",
         "128": "logo.png"
     },
-    "permissions": ["clipboardWrite"]
+    "permissions": ["clipboardWrite", "activeTab", "scripting"]
 }

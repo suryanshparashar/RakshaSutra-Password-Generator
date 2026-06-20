@@ -9,6 +9,7 @@ import {
     Type,
     ShieldCheck,
     Info,
+    Target,
 } from "lucide-react"
 import {
     EASY_TYPE_LENGTH,
@@ -86,6 +87,69 @@ function App() {
             setTimeout(() => setCopied(false), 1500)
         } catch (err) {
             showAlert("Failed to copy password: " + err, "error")
+        }
+    }, [showAlert])
+
+    // A5: opt-in only — never runs without this explicit click. Uses
+    // activeTab + scripting (granted only for the tab the user is
+    // currently looking at) to set the value of the focused
+    // input[type="password"] on the page, or the first one if none is
+    // focused, then fires input/change so framework-bound forms notice.
+    const fillOnPage = useCallback(async () => {
+        const current = passwordRef.current
+        if (!current) {
+            showAlert("Generate a password first", "warning")
+            return
+        }
+
+        try {
+            const tabs = await chrome.tabs.query({
+                active: true,
+                currentWindow: true,
+            })
+            const tabId = tabs[0]?.id
+            if (!tabId) throw new Error("no active tab")
+
+            const [{ result: filled }] = await chrome.scripting.executeScript({
+                target: { tabId },
+                func: (value: string) => {
+                    const fields = Array.from(
+                        document.querySelectorAll<HTMLInputElement>(
+                            'input[type="password"]'
+                        )
+                    )
+                    if (fields.length === 0) return false
+
+                    const active = document.activeElement
+                    const target =
+                        active instanceof HTMLInputElement &&
+                        fields.includes(active)
+                            ? active
+                            : fields[0]
+
+                    target.value = value
+                    target.dispatchEvent(new Event("input", { bubbles: true }))
+                    target.dispatchEvent(
+                        new Event("change", { bubbles: true })
+                    )
+
+                    const originalOutline = target.style.outline
+                    target.style.outline = "2px solid #2A93D2"
+                    setTimeout(() => {
+                        target.style.outline = originalOutline
+                    }, 1000)
+
+                    return true
+                },
+                args: [current],
+            })
+
+            showAlert(
+                filled ? "Filled into page" : "No password field on this page",
+                filled ? "success" : "warning"
+            )
+        } catch (err) {
+            showAlert("Couldn't fill page: " + err, "error")
         }
     }, [showAlert])
 
@@ -226,6 +290,15 @@ function App() {
                         className="specimen-field"
                     />
                 </div>
+
+                <button
+                    className="fill-page-btn"
+                    onClick={fillOnPage}
+                    title="Fill the focused password field on this tab"
+                >
+                    <Target size={15} />
+                    Fill on page
+                </button>
 
                 <div className="gauge-row">
                     <div

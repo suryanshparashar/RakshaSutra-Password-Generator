@@ -253,6 +253,28 @@
     letter-spacing: 0.01em;
 }
 
+.fill-page-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid rgba(63, 198, 232, 0.25);
+    color: var(--accent);
+    border-radius: 11px;
+    padding: 10px;
+    font: 600 12.5px "IBM Plex Sans", sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-bottom: 14px;
+    transition: all 0.18s;
+}
+
+.fill-page-btn:hover {
+    background: rgba(63, 198, 232, 0.08);
+    border-color: rgba(63, 198, 232, 0.4);
+}
+
 /* Gauge + meta */
 .gauge-row {
     display: flex;
