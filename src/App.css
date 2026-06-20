@@ -222,6 +222,26 @@
     animation: spin 1s linear infinite;
 }
 
+/* A2: copy is the hero action — visually distinct from the secondary
+   show/regenerate icon buttons. */
+.icon-btn-primary {
+    background: linear-gradient(135deg, var(--accent-strong), var(--accent-deep));
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(31, 132, 201, 0.4);
+}
+
+.icon-btn-primary:hover {
+    background: linear-gradient(135deg, var(--accent-strong), var(--accent-deep));
+    filter: brightness(1.1);
+}
+
+.icon-btn-primary.copied {
+    background: var(--success);
+    color: #0a0e16;
+    box-shadow: 0 6px 16px rgba(52, 211, 153, 0.4);
+}
+
 .specimen-field {
     width: 100%;
     min-width: 0;
@@ -231,12 +251,6 @@
     font: 600 19px "IBM Plex Mono", monospace;
     color: var(--text);
     letter-spacing: 0.01em;
-}
-
-.specimen-placeholder {
-    font: 600 19px "IBM Plex Mono", monospace;
-    color: #3b4554;
-    letter-spacing: 0.18em;
 }
 
 /* Gauge + meta */
@@ -508,4 +522,14 @@
     background: rgba(248, 113, 113, 0.14);
     border: 1px solid rgba(248, 113, 113, 0.4);
     color: var(--error);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
 }

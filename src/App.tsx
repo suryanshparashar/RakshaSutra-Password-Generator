@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import {
     Copy,
     RefreshCw,
@@ -10,128 +10,67 @@ import {
     ShieldCheck,
     Info,
 } from "lucide-react"
+import {
+    EASY_TYPE_LENGTH,
+    calculateLiveEntropy,
+    generateEasyTypePassword,
+    generateMaxSecurityPassword,
+    getCrackTimeLabel,
+    getStrengthColor,
+    getStrengthText,
+} from "./lib/crypto-core.js"
 import "./App.css"
-
-const getSecureRandomInt = (max: number): number => {
-    const randomBuffer = new Uint32Array(1)
-    let randomValue: number
-    const limit = Math.floor(2 ** 32 / max) * max
-
-    do {
-        crypto.getRandomValues(randomBuffer)
-        randomValue = randomBuffer[0]
-    } while (randomValue >= limit)
-
-    return randomValue % max
-}
 
 const LENGTH_PRESETS = [12, 16, 20, 24, 32]
 
+type PasswordType = "easytype" | "maxsecurity"
+
+const generateFor = (
+    passwordType: PasswordType,
+    length: number,
+    includeSpecial: boolean
+): string =>
+    passwordType === "easytype"
+        ? generateEasyTypePassword()
+        : generateMaxSecurityPassword(length, includeSpecial)
+
 function App() {
-    const [passwordType, setPasswordType] = useState<
-        "easytype" | "maxsecurity"
-    >("easytype")
+    const [passwordType, setPasswordType] = useState<PasswordType>("easytype")
     const [length, setLength] = useState(16)
     const [includeSpecial, setIncludeSpecial] = useState(true)
-    const [password, setPassword] = useState("")
-    const [entropy, setEntropy] = useState(0)
+    // A1: generated synchronously during initial render so the popup is
+    // never shown in an empty/dead state — there is no "click to start".
+    const [password, setPassword] = useState(() =>
+        generateFor("easytype", 16, true)
+    )
     const [alert, setAlert] = useState({ show: false, message: "", type: "" })
     const [isGenerating, setIsGenerating] = useState(false)
     const [showPassword, setShowPassword] = useState(true)
     const [copied, setCopied] = useState(false)
+    const passwordRef = useRef(password)
+    passwordRef.current = password
 
     const showAlert = useCallback((message: string, type: string) => {
         setAlert({ show: true, message, type })
         setTimeout(() => setAlert({ show: false, message: "", type: "" }), 3000)
     }, [])
 
-    const generateAppleStylePassword = useCallback((): string => {
-        const consonants = "bcdfghjklmnpqrstvwxyz"
-        const vowels = "aeiouy"
-
-        const generateSyllable = (): string => {
-            const c1 = consonants[getSecureRandomInt(consonants.length)]
-            const v = vowels[getSecureRandomInt(vowels.length)]
-            const c2 = consonants[getSecureRandomInt(consonants.length)]
-            return c1 + v + c2
+    const copyPassword = useCallback(async () => {
+        const current = passwordRef.current
+        if (!current) {
+            showAlert("Generate a password first", "warning")
+            return
         }
 
-        const syllables = Array.from({ length: 6 }, () => generateSyllable())
-
-        const password = `${syllables[0]}${syllables[1]}-${syllables[2]}${syllables[3]}-${syllables[4]}${syllables[5]}`
-
-        const chars = password.split("")
-
-        const letterIndices = chars
-            .map((char, idx) => (char !== "-" ? idx : -1))
-            .filter((idx) => idx !== -1)
-        const uppercaseIdx =
-            letterIndices[getSecureRandomInt(letterIndices.length)]
-        chars[uppercaseIdx] = chars[uppercaseIdx].toUpperCase()
-
-        const digitIdx = letterIndices.filter((idx) => idx !== uppercaseIdx)[
-            getSecureRandomInt(letterIndices.length - 1)
-        ]
-        chars[digitIdx] = getSecureRandomInt(10).toString()
-
-        return chars.join("")
-    }, [])
-
-    const generateRandomPassword = useCallback(
-        (len: number, includeSpecial: boolean): string => {
-            const lower = "abcdefghijklmnopqrstuvwxyz"
-            const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-            const digits = "0123456789"
-            const special = "!@#$%^&*()-_=+[]{}|;:,.<>?/~"
-
-            let charset = lower + upper + digits
-            if (includeSpecial) charset += special
-
-            const required: string[] = []
-            required.push(lower[getSecureRandomInt(lower.length)])
-            required.push(upper[getSecureRandomInt(upper.length)])
-            required.push(digits[getSecureRandomInt(digits.length)])
-            if (includeSpecial) {
-                required.push(special[getSecureRandomInt(special.length)])
-            }
-
-            for (let i = required.length; i < len; i++) {
-                required.push(charset[getSecureRandomInt(charset.length)])
-            }
-
-            for (let i = required.length - 1; i > 0; i--) {
-                const j = getSecureRandomInt(i + 1)
-                ;[required[i], required[j]] = [required[j], required[i]]
-            }
-
-            return required.join("")
-        },
-        []
-    )
-
-    const calculateAppleStyleEntropy = useCallback((): number => {
-        const consonants = 20
-        const vowels = 6
-
-        const entropyValue =
-            Math.log2(18) + // position for uppercase
-            Math.log2(26) + // uppercase letter choice
-            Math.log2(17) + // position for digit (can't be same as uppercase)
-            Math.log2(10) + // digit choice
-            10 * Math.log2(consonants) + // 10 consonants (16 total - 6 vowels)
-            6 * Math.log2(vowels) // 6 vowels
-
-        return Math.round(entropyValue * 10) / 10
-    }, [])
-
-    const calculateRandomPasswordEntropy = useCallback(
-        (len: number, includeSpecial: boolean): number => {
-            const charsetSize = 26 + 26 + 10 + (includeSpecial ? 32 : 0)
-            const entropyValue = len * Math.log2(charsetSize)
-            return Math.round(entropyValue * 10) / 10
-        },
-        []
-    )
+        try {
+            await navigator.clipboard.writeText(current)
+            setCopied(true)
+            showAlert("Copied ✓", "success")
+            setTimeout(() => setCopied(false), 1500)
+        } catch (err) {
+            showAlert("Failed to copy password: " + err, "error")
+        }
+    }, [showAlert])
 
     const generatePassword = useCallback(() => {
         if (isGenerating) return
@@ -139,104 +78,39 @@ function App() {
         setCopied(false)
 
         setTimeout(() => {
-            let generatedPassword: string
-            let calculatedEntropy: number
-
-            if (passwordType === "easytype") {
-                generatedPassword = generateAppleStylePassword()
-                calculatedEntropy = calculateAppleStyleEntropy()
-            } else {
-                generatedPassword = generateRandomPassword(
-                    length,
-                    includeSpecial
-                )
-                calculatedEntropy = calculateRandomPasswordEntropy(
-                    length,
-                    includeSpecial
-                )
-            }
-
-            setPassword(generatedPassword)
-            setEntropy(calculatedEntropy)
+            setPassword(generateFor(passwordType, length, includeSpecial))
             setIsGenerating(false)
-            showAlert(`${calculatedEntropy} bits of entropy`, "success")
         }, 360)
-    }, [
-        isGenerating,
-        passwordType,
-        length,
-        includeSpecial,
-        showAlert,
-        generateAppleStylePassword,
-        generateRandomPassword,
-        calculateAppleStyleEntropy,
-        calculateRandomPasswordEntropy,
-    ])
+    }, [isGenerating, passwordType, length, includeSpecial])
 
-    const copyPassword = useCallback(async () => {
-        if (!password) {
-            showAlert("Generate a password first", "warning")
-            return
+    // A2: Ctrl/Cmd+C copies the current password from anywhere in the
+    // popup, as long as the user isn't copying an actual text selection
+    // (e.g. from a future text field) — copy is the hero action here.
+    useEffect(() => {
+        const onKeyDown = (e: KeyboardEvent) => {
+            const isCopyChord = (e.ctrlKey || e.metaKey) && e.key === "c"
+            if (!isCopyChord) return
+            const hasSelection = (window.getSelection()?.toString().length ?? 0) > 0
+            if (hasSelection) return
+            e.preventDefault()
+            copyPassword()
         }
+        window.addEventListener("keydown", onKeyDown)
+        return () => window.removeEventListener("keydown", onKeyDown)
+    }, [copyPassword])
 
-        try {
-            await navigator.clipboard.writeText(password)
-            setCopied(true)
-            showAlert("Copied to clipboard", "success")
-            setTimeout(() => setCopied(false), 1800)
-        } catch (err) {
-            showAlert("Failed to copy password: " + err, "error")
-        }
-    }, [password, showAlert])
-
-    const getStrengthColor = useCallback(
-        (len: number) => {
-            if (passwordType === "easytype") return "#34d399"
-            if (len < 12) return "#f87171"
-            if (len < 16) return "#fbbf24"
-            if (len < 20) return "#34d399"
-            return "#3fc6e8"
-        },
-        [passwordType]
-    )
-
-    const getStrengthText = useCallback(
-        (len: number) => {
-            if (passwordType === "easytype") return "Strong"
-            if (len < 12) return "Weak"
-            if (len < 16) return "Medium"
-            if (len < 20) return "Strong"
-            return "Very Strong"
-        },
-        [passwordType]
-    )
-
-    const getCrackTime = useCallback((entropyBits: number): string => {
-        if (!entropyBits) return "Generate to see"
-        const seconds = Math.pow(2, entropyBits - 1) / 1e11
-        const years = seconds / 3.15576e7
-        if (seconds < 1) return "Instant"
-        if (seconds < 60) return `${Math.round(seconds)} seconds`
-        if (seconds < 3600) return `${Math.round(seconds / 60)} minutes`
-        if (seconds < 86400) return `${Math.round(seconds / 3600)} hours`
-        if (years < 1) return `${Math.round(seconds / 86400)} days`
-        if (years < 1e6) return `${Math.round(years).toLocaleString()} years`
-        if (years < 1e9)
-            return `${Math.round(years / 1e6).toLocaleString()} million years`
-        if (years < 1.4e10)
-            return `${Math.round(years / 1e9).toLocaleString()} billion years`
-        return "Longer than the universe has existed"
-    }, [])
-
-    const sliderColor = getStrengthColor(length)
-    const strengthColor = password
-        ? getStrengthColor(passwordType === "easytype" ? 20 : password.length)
-        : "#3b4554"
-    const strengthText = password
-        ? getStrengthText(passwordType === "easytype" ? 20 : password.length)
-        : "—"
+    // A3/A4: entropy, strength, and crack-time are derived live from the
+    // *currently selected settings* (mode/length/charset), not frozen at
+    // the moment of the last generation. Dragging the length slider or
+    // toggling special characters updates these immediately, with no
+    // regenerate required.
+    const entropy = calculateLiveEntropy(passwordType, length, includeSpecial)
+    const strengthColor = getStrengthColor(passwordType, length)
+    const strengthText = getStrengthText(passwordType, length)
+    const crackTimeLabel = getCrackTimeLabel(entropy)
     const gaugeDeg = (Math.min(entropy, 160) / 160) * 360
     const sliderPct = ((length - 8) / 24) * 100
+    const displayLength = passwordType === "easytype" ? EASY_TYPE_LENGTH : length
 
     return (
         <div className="popup">
@@ -264,8 +138,7 @@ function App() {
                         className={`mode-tab ${passwordType === "easytype" ? "active" : ""}`}
                         onClick={() => {
                             setPasswordType("easytype")
-                            setPassword("")
-                            setEntropy(0)
+                            setPassword(generateFor("easytype", length, includeSpecial))
                             setCopied(false)
                         }}
                     >
@@ -276,8 +149,9 @@ function App() {
                         className={`mode-tab ${passwordType === "maxsecurity" ? "active" : ""}`}
                         onClick={() => {
                             setPasswordType("maxsecurity")
-                            setPassword("")
-                            setEntropy(0)
+                            setPassword(
+                                generateFor("maxsecurity", length, includeSpecial)
+                            )
                             setCopied(false)
                         }}
                     >
@@ -316,33 +190,24 @@ function App() {
                                 />
                             </button>
                             <button
-                                className={`icon-btn ${copied ? "copied" : ""}`}
+                                className={`icon-btn icon-btn-primary ${copied ? "copied" : ""}`}
                                 onClick={copyPassword}
-                                title="Copy password"
+                                title="Copy password (Ctrl/Cmd+C)"
                             >
                                 {copied ? (
-                                    <Check size={16} />
+                                    <Check size={17} />
                                 ) : (
-                                    <Copy size={16} />
+                                    <Copy size={17} />
                                 )}
                             </button>
                         </div>
                     </div>
-                    {password ? (
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            value={password}
-                            readOnly
-                            className="specimen-field"
-                        />
-                    ) : (
-                        <div
-                            className="specimen-placeholder"
-                            style={{ letterSpacing: "1.5px" }}
-                        >
-                            · · · · · · · · · · · ·
-                        </div>
-                    )}
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        readOnly
+                        className="specimen-field"
+                    />
                 </div>
 
                 <div className="gauge-row">
@@ -353,7 +218,7 @@ function App() {
                         }}
                     >
                         <div className="gauge-inner">
-                            <span className="gauge-value">{entropy || 0}</span>
+                            <span className="gauge-value">{entropy}</span>
                             <span className="gauge-unit">bits</span>
                         </div>
                     </div>
@@ -371,7 +236,7 @@ function App() {
                         <div className="meta-row">
                             <span className="meta-row-label">Length</span>
                             <span className="meta-row-value">
-                                {password.length || "—"}
+                                {displayLength}
                             </span>
                         </div>
                         <div className="meta-divider" />
@@ -380,7 +245,7 @@ function App() {
                                 Time to crack
                             </span>
                             <span className="meta-row-value meta-row-value-accent">
-                                {getCrackTime(entropy)}
+                                {crackTimeLabel}
                             </span>
                         </div>
                     </div>
@@ -417,7 +282,7 @@ function App() {
                             onChange={(e) => setLength(Number(e.target.value))}
                             className="length-slider"
                             style={{
-                                background: `linear-gradient(to right, ${sliderColor} 0%, ${sliderColor} ${sliderPct}%, #1b2433 ${sliderPct}%, #1b2433 100%)`,
+                                background: `linear-gradient(to right, ${strengthColor} 0%, ${strengthColor} ${sliderPct}%, #1b2433 ${sliderPct}%, #1b2433 100%)`,
                             }}
                         />
                         <label className="special-toggle">
@@ -446,7 +311,7 @@ function App() {
                     disabled={isGenerating}
                 >
                     <Zap size={18} className={isGenerating ? "spinning" : ""} />
-                    {isGenerating ? "Generating…" : "Generate password"}
+                    {isGenerating ? "Regenerating…" : "Regenerate"}
                 </button>
             </div>
 
