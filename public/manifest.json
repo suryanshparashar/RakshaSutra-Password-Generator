@@ -1,11 +1,11 @@
 {
     "manifest_version": 3,
     "name": "RakshaSutra Password Generator",
-    "version": "1.0.7",
+    "version": "1.1.0",
     "description": "A Protective Formula for Strong Passwords",
     "browser_specific_settings": {
         "gecko": {
-            "id": "@rakshasutra-v1.0.0",
+            "id": "@rakshasutra-v1.1.0",
             "strict_min_version": "58.0"
         }
     },
