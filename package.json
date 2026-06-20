@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/check-crypto-core-sync.mjs",
     "build": "tsc -b && vite build",
     "postbuild": "node scripts/copy-crypto-core.mjs && node scripts/fetch-github-stars.mjs",
+    "check:crypto-sync": "node scripts/check-crypto-core-sync.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
