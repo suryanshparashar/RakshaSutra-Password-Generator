@@ -127,7 +127,25 @@ function App() {
                             ? active
                             : fields[0]
 
-                    target.value = value
+                    // React (and several other frameworks) override the
+                    // native `value` setter on the input prototype to track
+                    // changes internally. Setting `target.value = value`
+                    // directly only writes through React's shadowed setter,
+                    // which doesn't update React's recorded "last value" —
+                    // so the subsequent native `input` event gets swallowed
+                    // by React's own dedupe check and the framework never
+                    // sees a change. Calling the *native* prototype's setter
+                    // bypasses the override and writes the real DOM value,
+                    // so the dispatched event is then seen as a genuine change.
+                    const proto = Object.getPrototypeOf(target)
+                    const descriptor =
+                        Object.getOwnPropertyDescriptor(proto, "value") ||
+                        Object.getOwnPropertyDescriptor(
+                            HTMLInputElement.prototype,
+                            "value"
+                        )
+                    descriptor?.set?.call(target, value)
+
                     target.dispatchEvent(new Event("input", { bubbles: true }))
                     target.dispatchEvent(
                         new Event("change", { bubbles: true })
