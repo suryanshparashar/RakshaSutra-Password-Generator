@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "postbuild": "node scripts/copy-crypto-core.mjs",
+    "postbuild": "node scripts/copy-crypto-core.mjs && node scripts/fetch-github-stars.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
