@@ -215,6 +215,32 @@ function App() {
         }, 360)
     }, [isGenerating, passwordType, length, includeSpecial])
 
+    // Regenerate automatically when the length setting changes — but
+    // debounced, not on every slider tick. Waits until the value has been
+    // still for a moment (e.g. the user let go of the slider) before
+    // actually generating a new password for that length.
+    //
+    // generatePassword itself is read from a ref rather than listed as a
+    // dependency: it changes identity on every keystroke of generation
+    // (isGenerating flips true -> false), and depending on it directly
+    // would re-arm this debounce mid-generation and loop forever.
+    const generatePasswordRef = useRef(generatePassword)
+    generatePasswordRef.current = generatePassword
+
+    const isFirstRender = useRef(true)
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false
+            return
+        }
+        if (passwordType !== "maxsecurity") return
+
+        const timeout = setTimeout(() => {
+            generatePasswordRef.current()
+        }, 500)
+        return () => clearTimeout(timeout)
+    }, [length, passwordType])
+
     // A2: Ctrl/Cmd+C copies the current password from anywhere in the
     // popup, as long as the user isn't copying an actual text selection
     // (e.g. from a future text field) — copy is the hero action here.
