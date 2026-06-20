@@ -110,7 +110,7 @@ function App() {
             const tabId = tabs[0]?.id
             if (!tabId) throw new Error("no active tab")
 
-            const [{ result: filled }] = await chrome.scripting.executeScript({
+            const [{ result: filledCount }] = await chrome.scripting.executeScript({
                 target: { tabId },
                 func: (value: string) => {
                     const fields = Array.from(
@@ -118,7 +118,7 @@ function App() {
                             'input[type="password"]'
                         )
                     )
-                    if (fields.length === 0) return false
+                    if (fields.length === 0) return 0
 
                     const active = document.activeElement
                     const target =
@@ -127,9 +127,30 @@ function App() {
                             ? active
                             : fields[0]
 
+                    // Pick a "confirm password" field too, if one exists:
+                    // either it's named/labelled like one, or — for the very
+                    // common two-field signup form with no special naming —
+                    // it's simply the other password field on the page.
+                    const CONFIRM_PATTERN =
+                        /confirm|verify|retype|re-?enter|repeat/i
+                    const others = fields.filter((f) => f !== target)
+                    const namedConfirm = others.filter((f) =>
+                        CONFIRM_PATTERN.test(
+                            `${f.name} ${f.id} ${f.placeholder} ${f.getAttribute("aria-label") ?? ""}`
+                        )
+                    )
+                    const confirmFields =
+                        namedConfirm.length > 0
+                            ? namedConfirm
+                            : others.length === 1
+                              ? others
+                              : []
+
+                    const targets = [target, ...confirmFields]
+
                     // React (and several other frameworks) override the
                     // native `value` setter on the input prototype to track
-                    // changes internally. Setting `target.value = value`
+                    // changes internally. Setting `el.value = value`
                     // directly only writes through React's shadowed setter,
                     // which doesn't update React's recorded "last value" —
                     // so the subsequent native `input` event gets swallowed
@@ -137,34 +158,46 @@ function App() {
                     // sees a change. Calling the *native* prototype's setter
                     // bypasses the override and writes the real DOM value,
                     // so the dispatched event is then seen as a genuine change.
-                    const proto = Object.getPrototypeOf(target)
-                    const descriptor =
-                        Object.getOwnPropertyDescriptor(proto, "value") ||
-                        Object.getOwnPropertyDescriptor(
-                            HTMLInputElement.prototype,
-                            "value"
+                    const setNativeValue = (
+                        el: HTMLInputElement,
+                        val: string
+                    ) => {
+                        const proto = Object.getPrototypeOf(el)
+                        const descriptor =
+                            Object.getOwnPropertyDescriptor(proto, "value") ||
+                            Object.getOwnPropertyDescriptor(
+                                HTMLInputElement.prototype,
+                                "value"
+                            )
+                        descriptor?.set?.call(el, val)
+
+                        el.dispatchEvent(new Event("input", { bubbles: true }))
+                        el.dispatchEvent(
+                            new Event("change", { bubbles: true })
                         )
-                    descriptor?.set?.call(target, value)
 
-                    target.dispatchEvent(new Event("input", { bubbles: true }))
-                    target.dispatchEvent(
-                        new Event("change", { bubbles: true })
-                    )
+                        const originalOutline = el.style.outline
+                        el.style.outline = "2px solid #2A93D2"
+                        setTimeout(() => {
+                            el.style.outline = originalOutline
+                        }, 1000)
+                    }
 
-                    const originalOutline = target.style.outline
-                    target.style.outline = "2px solid #2A93D2"
-                    setTimeout(() => {
-                        target.style.outline = originalOutline
-                    }, 1000)
+                    targets.forEach((el) => setNativeValue(el, value))
 
-                    return true
+                    return targets.length
                 },
                 args: [current],
             })
 
+            const messages: Record<number, string> = {
+                0: "No password field on this page",
+                1: "Filled into page",
+                2: "Filled password + confirm fields",
+            }
             showAlert(
-                filled ? "Filled into page" : "No password field on this page",
-                filled ? "success" : "warning"
+                messages[filledCount] ?? `Filled ${filledCount} fields`,
+                filledCount > 0 ? "success" : "warning"
             )
         } catch (err) {
             showAlert("Couldn't fill page: " + err, "error")
