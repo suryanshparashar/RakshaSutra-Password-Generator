@@ -13,7 +13,7 @@
             content="password generator, secure passwords, cryptography, browser extension, password security"
         />
         <meta name="author" content="Suryansh Parashar" />
-        <meta name="theme-color" content="#3b82f6" />
+        <meta name="theme-color" content="#060709" />
 
         <!-- Open Graph Meta Tags -->
         <meta
@@ -30,519 +30,258 @@
         <!-- Favicon -->
         <link rel="icon" type="image/png" href="/public/logo.png" />
 
-        <link rel="stylesheet" href="landing.css" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+            rel="preconnect"
+            href="https://fonts.gstatic.com"
+            crossorigin
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap"
+            rel="stylesheet"
+        />
 
-        <!-- Lucide Icons -->
-        <script src="https://unpkg.com/lucide@latest"></script>
+        <link rel="stylesheet" href="landing.css" />
     </head>
     <body>
-        <!-- Navigation -->
-        <nav class="navbar">
-            <div class="container">
-                <div class="nav-content">
-                    <div class="logo">
-                        <div class="logo-icon">
-                            <i data-lucide="shield"></i>
-                        </div>
-                        <span class="logo-text">RakshaSutra</span>
-                    </div>
-                    <div class="nav-links">
-                        <a href="#features">Features</a>
-                        <a href="#about">About</a>
-                        <a href="#download">Download</a>
-                        <a
-                            href="https://github.com/suryanshparashar/RakshaSutra-KeyGen-Extension"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <i data-lucide="github"></i>
-                        </a>
-                    </div>
+        <!-- Header -->
+        <header class="site-header">
+            <div class="header-inner">
+                <div class="brand">
+                    <img src="logo.png" width="26" height="26" alt="" />
+                    <span class="brand-name">RAKSHASUTRA</span>
                 </div>
+                <div class="brand-tag">Password Forge · v3</div>
             </div>
-        </nav>
+        </header>
 
-        <!-- Hero Section -->
+        <!-- Hero -->
         <section class="hero">
-            <div class="container">
-                <div class="hero-content">
-                    <div class="hero-badge">
-                        <i data-lucide="shield-check"></i>
-                        <span
-                            >Cryptographically Secure Password Generation</span
-                        >
-                    </div>
-                    <h1 class="hero-title">
-                        A Protective Formula for<br />
-                        <span class="gradient-text">Strong Passwords</span>
-                    </h1>
-                    <p class="hero-description">
-                        Transform your online security with RakshaSutra, a
-                        military-grade password generator that combines ancient
-                        wisdom with cutting-edge cryptography. Generate
-                        unbreakable passwords instantly, right in your browser.
-                    </p>
-                    <div class="hero-stats">
-                        <div class="stat">
-                            <div class="stat-number">71+</div>
-                            <div class="stat-label">Bits of Entropy</div>
+            <div class="hero-inner">
+                <div class="hero-kicker">
+                    [ Cryptographic password generator ]
+                </div>
+                <h1 class="hero-title">
+                    A protective thread<br />for every login<span
+                        class="hero-dot"
+                        >.</span
+                    >
+                </h1>
+                <div class="hero-grid">
+                    <div class="specimen-block">
+                        <div class="specimen-label">
+                            Live · generated locally
                         </div>
-                        <div class="stat">
-                            <div class="stat-number">0</div>
-                            <div class="stat-label">Data Collection</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-number">100%</div>
-                            <div class="stat-label">Free</div>
-                        </div>
-                    </div>
-                    <div class="cta-buttons" id="download">
-                        <a
-                            href="https://addons.mozilla.org/firefox/addon/rakshasutra/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="cta-button firefox"
-                        >
-                            <i data-lucide="download"></i>
-                            <div class="button-text">
-                                <span class="button-label">Firefox</span>
-                                <span class="button-sublabel"
-                                    >Mozilla Add-ons</span
-                                >
+                        <div class="specimen-box">
+                            <div class="specimen-text" id="live-password">
+                                Generating&hellip;
                             </div>
-                        </a>
+                        </div>
+                        <div class="specimen-meta">
+                            <span id="live-chars">&nbsp;</span>
+                            <span class="meta-accent" id="live-bits"
+                                >&nbsp;</span
+                            >
+                            <span class="meta-success" id="live-strength"
+                                >&nbsp;</span
+                            >
+                        </div>
+                    </div>
+                    <div class="hero-copy">
+                        <p>
+                            No servers. No telemetry. No trace. Real
+                            randomness from the Web Crypto API, forged
+                            entirely on your device.
+                        </p>
                         <a
                             href="https://chromewebstore.google.com/detail/rakshasutra-password-gene/kajookmmcahfpkmdhgkkdijppkdlgano"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="cta-button chrome"
+                            class="install-button"
                         >
-                            <i data-lucide="chrome"></i>
-                            <div class="button-text">
-                                <span class="button-label">Chrome</span>
-                                <span class="button-sublabel"
-                                    >Chrome Web Store</span
-                                >
-                            </div>
+                            Install the extension →
                         </a>
-                        <a
-                            href="https://microsoftedge.microsoft.com/addons/detail/rakshasutra-password-gene/haokhllnanaalielaepkppgdanbjakdc"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="cta-button edge"
-                        >
-                            <svg
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                            >
-                                <path
-                                    d="M21.86 8.5c-.22-1.93-1.17-3.69-2.62-4.96A9.85 9.85 0 0 0 12 1C8.73 1 5.73 2.53 3.8 5.07a9.84 9.84 0 0 0-1.65 7.58c.3 1.42.94 2.73 1.86 3.82 1.47 1.73 3.51 2.8 5.74 3.03h.09c.97.1 1.95.05 2.91-.14a9.85 9.85 0 0 0 5.95-3.89c.94-1.22 1.58-2.65 1.85-4.17.12-.68.18-1.37.18-2.06 0-.57-.04-1.14-.13-1.7-.05-.26-.11-.53-.18-.79zM12 21a8.98 8.98 0 0 1-7.42-3.92c-.47-.68-.85-1.43-1.12-2.23a8.93 8.93 0 0 1-.43-2.78c0-4.97 4.03-9 9-9 2.58 0 4.9 1.09 6.54 2.84-1.43-.67-3-1.04-4.65-1.04-3.35 0-6.32 1.67-8.12 4.23-.45.64-.82 1.35-1.09 2.1a7.94 7.94 0 0 0-.43 2.58c0 1.94.69 3.72 1.84 5.11.09.1.18.2.28.3.95.95 2.16 1.65 3.52 2.01-.66-.19-1.29-.47-1.88-.83zm8.83-8.83c-.08.67-.26 1.32-.53 1.93a7.94 7.94 0 0 1-4.63 4.36c-.67.24-1.38.4-2.11.47.86-.86 1.51-1.91 1.89-3.08.24-.74.36-1.52.36-2.32 0-1.94-.69-3.72-1.84-5.11-.09-.1-.18-.2-.28-.3a8.02 8.02 0 0 0-3.52-2.01c.66.19 1.29.47 1.88.83.59.36 1.13.8 1.61 1.3a8.98 8.98 0 0 1 2.62 6.36c0 .67-.07 1.33-.21 1.97-.14.64-.36 1.26-.65 1.84-.29.58-.65 1.12-1.07 1.61-.42.49-.9.93-1.43 1.31a8.93 8.93 0 0 0 6.91-5.16c.47-.68.85-1.43 1.12-2.23.27-.8.43-1.65.43-2.53 0-.45-.03-.89-.09-1.33.03.36.05.73.05 1.1 0 .67-.07 1.33-.21 1.97z"
-                                />
-                            </svg>
-                            <div class="button-text">
-                                <span class="button-label">Edge</span>
-                                <span class="button-sublabel"
-                                    >Edge Add-ons</span
-                                >
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                <div class="hero-visual">
-                    <div class="floating-card">
-                        <img
-                            src="/screenshots/ss-easy-type.png"
-                            alt="RakshaSutra Easy Type Mode"
-                            class="screenshot"
-                        />
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Features Section -->
-        <section class="features" id="features">
-            <div class="container">
-                <div class="section-header">
-                    <h2 class="section-title">Powerful Features</h2>
-                    <p class="section-description">
-                        Everything you need for maximum password security
-                    </p>
-                </div>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i data-lucide="type"></i>
-                        </div>
-                        <h3 class="feature-title">Easy Type Mode</h3>
-                        <p class="feature-description">
-                            Apple-style syllable patterns create 20-character
-                            passwords that are easy to type on any device.
-                            Perfect for gaming consoles and smart TVs.
-                        </p>
-                        <div class="feature-example">diksyq-qe9xec-teXdug</div>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i data-lucide="shield-check"></i>
-                        </div>
-                        <h3 class="feature-title">Max Security Mode</h3>
-                        <p class="feature-description">
-                            GitHub/Microsoft-style fully random passwords with
-                            customizable length (8-32 characters) and optional
-                            special characters.
-                        </p>
-                        <div class="feature-example">2.go2E$1X~4W.DAH~9q</div>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i data-lucide="lock"></i>
-                        </div>
-                        <h3 class="feature-title">Cryptographically Secure</h3>
-                        <p class="feature-description">
-                            Uses Web Crypto API with rejection sampling to
-                            eliminate modulo bias. True random generation with
-                            no statistical patterns.
-                        </p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i data-lucide="eye-off"></i>
-                        </div>
-                        <h3 class="feature-title">Zero Data Collection</h3>
-                        <p class="feature-description">
-                            Completely offline and private. No telemetry,
-                            analytics, or tracking. Your passwords never leave
-                            your device.
-                        </p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i data-lucide="gauge"></i>
-                        </div>
-                        <h3 class="feature-title">Real-time Entropy Display</h3>
-                        <p class="feature-description">
-                            See password strength instantly with entropy
-                            calculations. Exceeds NIST's 60+ bit recommendation
-                            in all modes.
-                        </p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i data-lucide="copy"></i>
-                        </div>
-                        <h3 class="feature-title">One-Click Copy</h3>
-                        <p class="feature-description">
-                            Instantly copy generated passwords to your
-                            clipboard. Show/hide toggle for added security when
-                            sharing your screen.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- About Section -->
-        <section class="about" id="about">
-            <div class="container">
-                <div class="about-content">
-                    <div class="about-text">
-                        <h2 class="section-title">About RakshaSutra</h2>
-                        <p class="about-description">
-                            Named from Sanskrit, where
-                            <strong>Raksha</strong> means "protection" and
-                            <strong>Sutra</strong> means "formula" or "thread,"
-                            RakshaSutra represents the protective thread of
-                            security that binds your digital life.
-                        </p>
-                        <p class="about-description">
-                            Unlike basic password generators that use simple
-                            randomization, RakshaSutra employs the same
-                            sophisticated algorithms used by Apple's Keychain
-                            and enterprise password managers. We've combined
-                            ancient wisdom with modern cryptography to create a
-                            tool that delivers both convenience and maximum
-                            security.
-                        </p>
-
-                        <div class="security-highlights">
-                            <h3 class="highlights-title">Security Features</h3>
-                            <ul class="highlights-list">
-                                <li>
-                                    <i data-lucide="check-circle"></i>
-                                    <span
-                                        ><strong
-                                            >True Random Generation:</strong
-                                        >
-                                        Uses
-                                        <code>crypto.getRandomValues()</code>
-                                        for cryptographic randomness</span
-                                    >
-                                </li>
-                                <li>
-                                    <i data-lucide="check-circle"></i>
-                                    <span
-                                        ><strong
-                                            >Modulo Bias Elimination:</strong
-                                        >
-                                        Implements rejection sampling to prevent
-                                        statistical bias</span
-                                    >
-                                </li>
-                                <li>
-                                    <i data-lucide="check-circle"></i>
-                                    <span
-                                        ><strong>No Network Requests:</strong>
-                                        All processing happens locally in your
-                                        browser</span
-                                    >
-                                </li>
-                                <li>
-                                    <i data-lucide="check-circle"></i>
-                                    <span
-                                        ><strong>Open Algorithm:</strong> Uses
-                                        industry-standard password generation
-                                        methods</span
-                                    >
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="entropy-table">
-                            <h3 class="highlights-title">Entropy Comparison</h3>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Method</th>
-                                        <th>Length</th>
-                                        <th>Entropy (bits)</th>
-                                        <th>Security Level</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Easy Type</td>
-                                        <td>20 chars</td>
-                                        <td>75</td>
-                                        <td>
-                                            <span class="badge badge-success"
-                                                >Strong ✓</span
-                                            >
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Max Security</td>
-                                        <td>16 chars</td>
-                                        <td>104.9</td>
-                                        <td>
-                                            <span class="badge badge-success"
-                                                >Strong ✓</span
-                                            >
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Max Security</td>
-                                        <td>32 chars</td>
-                                        <td>209.7</td>
-                                        <td>
-                                            <span class="badge badge-success"
-                                                >Very Strong ✓</span
-                                            >
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <p class="table-note">
-                                <i data-lucide="info"></i>
-                                NIST recommends 60+ bits of entropy for strong
-                                passwords. RakshaSutra exceeds this in all
-                                modes.
+        <!-- Numbered sections -->
+        <section class="sections">
+            <div class="sections-inner">
+                <article class="numbered-section">
+                    <div class="section-index">01 / EASY</div>
+                    <div class="section-body">
+                        <div class="section-text">
+                            <h3>Easy Type Mode</h3>
+                            <p>
+                                Syllable patterns produce 20-character
+                                passwords that are genuinely easy to type —
+                                on a phone, a console, or a smart TV. Strong
+                                without the struggle.
                             </p>
                         </div>
-                    </div>
-                    <div class="about-visual">
-                        <div class="screenshot-container">
-                            <img
-                                src="/screenshots/ss-max-security.png"
-                                alt="RakshaSutra Max Security Mode"
-                            />
-                            <div class="screenshot-label">
-                                Max Security Mode
-                            </div>
+                        <div class="section-sample">
+                            diksyq-qe9xec-teXdug
                         </div>
                     </div>
-                </div>
+                </article>
+
+                <article class="numbered-section">
+                    <div class="section-index">02 / MAX</div>
+                    <div class="section-body">
+                        <div class="section-text">
+                            <h3>Max Security Mode</h3>
+                            <p>
+                                Fully random, 8 to 32 characters, optional
+                                symbols. Rejection sampling removes modulo
+                                bias so the distribution stays perfectly
+                                uniform — up to 209 bits of entropy.
+                            </p>
+                        </div>
+                        <div class="section-sample section-sample-wrap">
+                            2.go2E$1X~4W.DAH~9q
+                        </div>
+                    </div>
+                </article>
+
+                <article class="numbered-section numbered-section-last">
+                    <div class="section-index">03 / PRIVATE</div>
+                    <div class="section-body">
+                        <div class="section-text">
+                            <h3>Zero Data, Fully Offline</h3>
+                            <p>
+                                No network requests, no analytics, no
+                                storage. Everything happens locally in your
+                                browser, and the whole algorithm is open
+                                source and auditable.
+                            </p>
+                        </div>
+                        <div class="section-trace">
+                            → crypto.getRandomValues<br />→ no telemetry<br />→
+                            manifest v3<br />→ open source
+                        </div>
+                    </div>
+                </article>
             </div>
         </section>
 
-        <!-- Technology Stack -->
-        <section class="tech-stack">
-            <div class="container">
-                <h2 class="section-title">Built with Modern Technology</h2>
-                <div class="tech-grid">
-                    <div class="tech-item">
-                        <div class="tech-icon">⚛️</div>
-                        <div class="tech-name">React 18</div>
-                    </div>
-                    <div class="tech-item">
-                        <div class="tech-icon">📘</div>
-                        <div class="tech-name">TypeScript</div>
-                    </div>
-                    <div class="tech-item">
-                        <div class="tech-icon">⚡</div>
-                        <div class="tech-name">Vite 5</div>
-                    </div>
-                    <div class="tech-item">
-                        <div class="tech-icon">🔐</div>
-                        <div class="tech-name">Web Crypto API</div>
-                    </div>
-                    <div class="tech-item">
-                        <div class="tech-icon">🎨</div>
-                        <div class="tech-name">CSS3</div>
-                    </div>
-                    <div class="tech-item">
-                        <div class="tech-icon">🌐</div>
-                        <div class="tech-name">Manifest V3</div>
-                    </div>
+        <!-- CTA -->
+        <section class="cta">
+            <div class="cta-inner">
+                <h2 class="cta-title">
+                    Never reuse a<br />weak password again.
+                </h2>
+                <div class="cta-buttons">
+                    <a
+                        href="https://chromewebstore.google.com/detail/rakshasutra-password-gene/kajookmmcahfpkmdhgkkdijppkdlgano"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="cta-btn cta-btn-primary"
+                        >CHROME</a
+                    >
+                    <a
+                        href="https://addons.mozilla.org/firefox/addon/rakshasutra/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="cta-btn"
+                        >FIREFOX</a
+                    >
+                    <a
+                        href="https://microsoftedge.microsoft.com/addons/detail/rakshasutra-password-gene/haokhllnanaalielaepkppgdanbjakdc"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="cta-btn"
+                        >EDGE</a
+                    >
+                    <a
+                        href="https://github.com/suryanshparashar/RakshaSutra-KeyGen-Extension"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="cta-btn"
+                        >GITHUB</a
+                    >
+                </div>
+                <div class="cta-footer">
+                    © <span id="current-year"></span> SURYANSH PARASHAR ·
+                    MADE IN BHARAT 🇮🇳
                 </div>
             </div>
         </section>
-
-        <!-- CTA Section -->
-        <section class="cta-section">
-            <div class="container">
-                <div class="cta-content">
-                    <h2 class="cta-title">
-                        Ready to Secure Your Digital Life?
-                    </h2>
-                    <p class="cta-description">
-                        Install RakshaSutra today and experience the difference
-                        that true cryptographic security makes for your digital
-                        safety.
-                    </p>
-                    <div class="cta-buttons-secondary">
-                        <a href="#download" class="btn-primary">
-                            <i data-lucide="download"></i>
-                            Download Now
-                        </a>
-                        <a
-                            href="https://github.com/suryanshparashar/RakshaSutra-KeyGen-Extension"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="btn-secondary"
-                        >
-                            <i data-lucide="github"></i>
-                            View on GitHub
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer class="footer">
-            <div class="container">
-                <div class="footer-content">
-                    <div class="footer-brand">
-                        <div class="footer-logo">
-                            <div class="logo-icon">
-                                <i data-lucide="shield"></i>
-                            </div>
-                            <span class="logo-text">RakshaSutra</span>
-                        </div>
-                        <p class="footer-tagline">
-                            A Protective Formula for Strong Passwords
-                        </p>
-                    </div>
-                    <div class="footer-links">
-                        <div class="footer-section">
-                            <h4>Product</h4>
-                            <a href="#features">Features</a>
-                            <a href="#about">About</a>
-                            <a href="#download">Download</a>
-                        </div>
-                        <div class="footer-section">
-                            <h4>Resources</h4>
-                            <a
-                                href="https://github.com/suryanshparashar/RakshaSutra-KeyGen-Extension"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                >GitHub</a
-                            >
-                            <a
-                                href="https://github.com/suryanshparashar/RakshaSutra-KeyGen-Extension/issues"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                >Issues</a
-                            >
-                            <a href="README.md" target="_blank"
-                                >Documentation</a
-                            >
-                        </div>
-                        <div class="footer-section">
-                            <h4>Legal</h4>
-                            <a href="LICENSE" target="_blank">License</a>
-                            <a href="#privacy">Privacy Policy</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="footer-bottom">
-                    <p>
-                        &copy; <span id="current-year"></span> Suryansh
-                        Parashar. All Rights Reserved.
-                    </p>
-                    <p class="footer-bottom-lower">
-                        Made with
-                        <span>
-                            <i data-lucide="shield"></i>
-                        </span>
-                        and cryptography in Bharat (India)
-                    </p>
-                </div>
-            </div>
-        </footer>
 
         <script>
-            // Get the current year
-            const yearSpan = document.getElementById("current-year")
-            const currentYear = new Date().getFullYear()
-            yearSpan.textContent = currentYear
+            document.getElementById("current-year").textContent =
+                new Date().getFullYear()
 
-            // Initialize Lucide icons
-            lucide.createIcons()
+            // Cryptographically secure live password specimen, mirroring
+            // the extension's Max Security generator (18 chars, symbols on).
+            function secureRandomInt(max) {
+                const buf = new Uint32Array(1)
+                const limit = Math.floor(2 ** 32 / max) * max
+                let value
+                do {
+                    crypto.getRandomValues(buf)
+                    value = buf[0]
+                } while (value >= limit)
+                return value % max
+            }
 
-            // Smooth scrolling
-            document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-                anchor.addEventListener("click", function (e) {
-                    e.preventDefault()
-                    const target = document.querySelector(
-                        this.getAttribute("href")
-                    )
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: "smooth",
-                            block: "start",
-                        })
-                    }
-                })
-            })
+            function generateSpecimen(length) {
+                const lower = "abcdefghijklmnopqrstuvwxyz"
+                const upper = lower.toUpperCase()
+                const digits = "0123456789"
+                const special = "!@#$%^&*()-_=+[]{}|;:,.<>?/~"
+                const charset = lower + upper + digits + special
 
-            // Add scroll effect to navbar
-            window.addEventListener("scroll", () => {
-                const navbar = document.querySelector(".navbar")
-                if (window.scrollY > 50) {
-                    navbar.classList.add("scrolled")
-                } else {
-                    navbar.classList.remove("scrolled")
+                const required = [
+                    lower[secureRandomInt(lower.length)],
+                    upper[secureRandomInt(upper.length)],
+                    digits[secureRandomInt(digits.length)],
+                    special[secureRandomInt(special.length)],
+                ]
+                for (let i = required.length; i < length; i++) {
+                    required.push(charset[secureRandomInt(charset.length)])
                 }
-            })
+                for (let i = required.length - 1; i > 0; i--) {
+                    const j = secureRandomInt(i + 1)
+                    ;[required[i], required[j]] = [required[j], required[i]]
+                }
+                return required.join("")
+            }
+
+            function entropyFor(length) {
+                const charsetSize = 26 + 26 + 10 + 32
+                return Math.round(length * Math.log2(charsetSize) * 10) / 10
+            }
+
+            function strengthFor(bits) {
+                if (bits < 60) return "WEAK"
+                if (bits < 80) return "MEDIUM"
+                if (bits < 100) return "STRONG"
+                return "VERY STRONG"
+            }
+
+            const SPECIMEN_LENGTH = 18
+            const passwordEl = document.getElementById("live-password")
+            const charsEl = document.getElementById("live-chars")
+            const bitsEl = document.getElementById("live-bits")
+            const strengthEl = document.getElementById("live-strength")
+
+            function tick() {
+                passwordEl.style.opacity = "0"
+                setTimeout(() => {
+                    const pw = generateSpecimen(SPECIMEN_LENGTH)
+                    const bits = entropyFor(SPECIMEN_LENGTH)
+                    passwordEl.textContent = pw
+                    charsEl.textContent = `${SPECIMEN_LENGTH} CHARS`
+                    bitsEl.textContent = `${bits} BITS`
+                    strengthEl.textContent = strengthFor(bits)
+                    passwordEl.style.opacity = "1"
+                }, 180)
+            }
+
+            tick()
+            setInterval(tick, 2800)
         </script>
     </body>
 </html>

@@ -1,16 +1,16 @@
 import { useState, useCallback } from "react"
 import {
     Copy,
-    // RefreshCw,
-    Shield,
+    RefreshCw,
     Eye,
     EyeOff,
-    Lock,
     Zap,
     Check,
     Type,
     ShieldCheck,
+    Info,
 } from "lucide-react"
+import "./App.css"
 
 const getSecureRandomInt = (max: number): number => {
     const randomBuffer = new Uint32Array(1)
@@ -24,6 +24,8 @@ const getSecureRandomInt = (max: number): number => {
 
     return randomValue % max
 }
+
+const LENGTH_PRESETS = [12, 16, 20, 24, 32]
 
 function App() {
     const [passwordType, setPasswordType] = useState<
@@ -132,6 +134,7 @@ function App() {
     )
 
     const generatePassword = useCallback(() => {
+        if (isGenerating) return
         setIsGenerating(true)
         setCopied(false)
 
@@ -156,12 +159,10 @@ function App() {
             setPassword(generatedPassword)
             setEntropy(calculatedEntropy)
             setIsGenerating(false)
-            showAlert(
-                `Password generated with ${calculatedEntropy} bits of entropy`,
-                "success"
-            )
-        }, 400)
+            showAlert(`${calculatedEntropy} bits of entropy`, "success")
+        }, 360)
     }, [
+        isGenerating,
         passwordType,
         length,
         includeSpecial,
@@ -182,301 +183,277 @@ function App() {
             await navigator.clipboard.writeText(password)
             setCopied(true)
             showAlert("Copied to clipboard", "success")
-            setTimeout(() => setCopied(false), 2000)
+            setTimeout(() => setCopied(false), 1800)
         } catch (err) {
             showAlert("Failed to copy password: " + err, "error")
         }
     }, [password, showAlert])
 
-    const getStrengthColor = useCallback((length: number) => {
-        if (passwordType === "easytype") return "#10b981"
-        if (length < 12) return "#ef4444"
-        if (length < 16) return "#f59e0b"
-        if (length < 20) return "#10b981"
-        return "#06b6d4"
-    }, [passwordType])
+    const getStrengthColor = useCallback(
+        (len: number) => {
+            if (passwordType === "easytype") return "#34d399"
+            if (len < 12) return "#f87171"
+            if (len < 16) return "#fbbf24"
+            if (len < 20) return "#34d399"
+            return "#3fc6e8"
+        },
+        [passwordType]
+    )
 
-    const getStrengthText = useCallback((length: number) => {
-        if (passwordType === "easytype") return "Strong"
-        if (length < 12) return "Weak"
-        if (length < 16) return "Medium"
-        if (length < 20) return "Strong"
-        return "Very Strong"
-    }, [passwordType])
+    const getStrengthText = useCallback(
+        (len: number) => {
+            if (passwordType === "easytype") return "Strong"
+            if (len < 12) return "Weak"
+            if (len < 16) return "Medium"
+            if (len < 20) return "Strong"
+            return "Very Strong"
+        },
+        [passwordType]
+    )
 
-    const getStrengthWidth = useCallback((length: number) => {
-        if (passwordType === "easytype") return "75%"
-        if (length < 12) return "25%"
-        if (length < 16) return "50%"
-        if (length < 20) return "75%"
-        return "100%"
-    }, [passwordType])
+    const getCrackTime = useCallback((entropyBits: number): string => {
+        if (!entropyBits) return "Generate to see"
+        const seconds = Math.pow(2, entropyBits - 1) / 1e11
+        const years = seconds / 3.15576e7
+        if (seconds < 1) return "Instant"
+        if (seconds < 60) return `${Math.round(seconds)} seconds`
+        if (seconds < 3600) return `${Math.round(seconds / 60)} minutes`
+        if (seconds < 86400) return `${Math.round(seconds / 3600)} hours`
+        if (years < 1) return `${Math.round(seconds / 86400)} days`
+        if (years < 1e6) return `${Math.round(years).toLocaleString()} years`
+        if (years < 1e9)
+            return `${Math.round(years / 1e6).toLocaleString()} million years`
+        if (years < 1.4e10)
+            return `${Math.round(years / 1e9).toLocaleString()} billion years`
+        return "Longer than the universe has existed"
+    }, [])
+
+    const sliderColor = getStrengthColor(length)
+    const strengthColor = password
+        ? getStrengthColor(passwordType === "easytype" ? 20 : password.length)
+        : "#3b4554"
+    const strengthText = password
+        ? getStrengthText(passwordType === "easytype" ? 20 : password.length)
+        : "—"
+    const gaugeDeg = (Math.min(entropy, 160) / 160) * 360
+    const sliderPct = ((length - 8) / 24) * 100
 
     return (
-        <div className="app-container">
-            <div className="background-grid"></div>
-            <div className="background-glow"></div>
-
-            <div className="content-wrapper">
-                <header className="app-header">
-                    <div className="logo-container">
-                        <div className="logo-badge">
-                            <Shield className="logo-icon" />
+        <div className="popup">
+            <div className="popup-card">
+                <header className="popup-header">
+                    <div className="popup-brand">
+                        <div className="brand-badge">
+                            <img
+                                src="/logo.png"
+                                width={26}
+                                height={26}
+                                alt=""
+                            />
                         </div>
-                        <div className="logo-text">
-                            <h1 className="app-title">RakshaSutra</h1>
-                            <p className="app-tagline">
-                                A Protective Formula for Strong Passwords
-                            </p>
+                        <div>
+                            <div className="brand-name">RakshaSutra</div>
+                            <div className="brand-sub">Password Forge</div>
                         </div>
                     </div>
+                    <div className="secure-badge">SECURE</div>
                 </header>
 
-                <main className="main-card">
-                    <div className="card-header">
-                        <Lock size={20} />
-                        <h2>Generate Password</h2>
-                    </div>
-
-                    <div className="tabs">
-                        <button
-                            className={`tab ${passwordType === "easytype" ? "active" : ""}`}
-                            onClick={() => {
-                                setPasswordType("easytype")
-                                setPassword("")
-                                setEntropy(0)
-                            }}
-                        >
-                            <Type size={18} />
-                            <span>Easy Type</span>
-                        </button>
-                        <button
-                            className={`tab ${passwordType === "maxsecurity" ? "active" : ""}`}
-                            onClick={() => {
-                                setPasswordType("maxsecurity")
-                                setPassword("")
-                                setEntropy(0)
-                            }}
-                        >
-                            <ShieldCheck size={18} />
-                            <span>Max Security</span>
-                        </button>
-                    </div>
-
-                    {passwordType === "easytype" && (
-                        <div className="info-box">
-                            <div className="info-icon">
-                                <Type size={20} />
-                            </div>
-                            <div className="info-content">
-                                <h3 className="info-title">
-                                    Easy to Type Password
-                                </h3>
-                                <p className="info-text">
-                                    Generates a 20-character password with
-                                    syllable patterns, making it easy to type on
-                                    any device. Perfect for situations without
-                                    password managers or auto-fill.
-                                </p>
-                            </div>
-                        </div>
-                    )}
-
-                    {passwordType === "maxsecurity" && (
-                        <div className="controls-section">
-                            <div className="control-group">
-                                <div className="control-header">
-                                    <label
-                                        htmlFor="length"
-                                        className="control-label"
-                                    >
-                                        Password Length
-                                    </label>
-                                    <div className="length-badge">
-                                        {length} characters
-                                    </div>
-                                </div>
-
-                                <input
-                                    type="range"
-                                    id="length"
-                                    min="8"
-                                    max="32"
-                                    value={length}
-                                    onChange={(e) =>
-                                        setLength(Number(e.target.value))
-                                    }
-                                    className="length-slider"
-                                    style={{
-                                        background: `linear-gradient(to right, ${getStrengthColor(length)} 0%, ${getStrengthColor(length)} ${
-                                            ((length - 8) / 24) * 100
-                                        }%, #1e293b ${((length - 8) / 24) * 100}%, #1e293b 100%)`,
-                                    }}
-                                />
-
-                                <div className="slider-markers">
-                                    <span>8</span>
-                                    <span>16</span>
-                                    <span>24</span>
-                                    <span>32</span>
-                                </div>
-
-                                <div className="strength-bar-container">
-                                    <div className="strength-bar-bg">
-                                        <div
-                                            className="strength-bar-fill"
-                                            style={{
-                                                width: getStrengthWidth(length),
-                                                backgroundColor:
-                                                    getStrengthColor(length),
-                                            }}
-                                        ></div>
-                                    </div>
-                                    <span
-                                        className="strength-text"
-                                        style={{ color: getStrengthColor(length) }}
-                                    >
-                                        {getStrengthText(length)}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="control-group">
-                                <label className="custom-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        checked={includeSpecial}
-                                        onChange={(e) =>
-                                            setIncludeSpecial(e.target.checked)
-                                        }
-                                        className="checkbox-input"
-                                    />
-                                    <span className="checkbox-custom">
-                                        {includeSpecial && (
-                                            <Check size={14} strokeWidth={3} />
-                                        )}
-                                    </span>
-                                    <span className="checkbox-text">
-                                        Include special characters
-                                        <span className="checkbox-hint">
-                                            !@#$%^&*()_+-=[]{}|;:,.
-                                        </span>
-                                    </span>
-                                </label>
-                            </div>
-                        </div>
-                    )}
-
+                <div className="mode-tabs">
                     <button
-                        onClick={generatePassword}
-                        disabled={isGenerating}
-                        className={`generate-button ${isGenerating ? "generating" : ""}`}
+                        className={`mode-tab ${passwordType === "easytype" ? "active" : ""}`}
+                        onClick={() => {
+                            setPasswordType("easytype")
+                            setPassword("")
+                            setEntropy(0)
+                            setCopied(false)
+                        }}
                     >
-                        <Zap
-                            className={`button-icon ${isGenerating ? "spinning" : ""}`}
-                            size={20}
-                        />
-                        <span>
-                            {isGenerating
-                                ? "Generating..."
-                                : "Generate Secure Password"}
-                        </span>
+                        <Type size={17} />
+                        Easy Type
                     </button>
+                    <button
+                        className={`mode-tab ${passwordType === "maxsecurity" ? "active" : ""}`}
+                        onClick={() => {
+                            setPasswordType("maxsecurity")
+                            setPassword("")
+                            setEntropy(0)
+                            setCopied(false)
+                        }}
+                    >
+                        <ShieldCheck size={17} />
+                        Max Security
+                    </button>
+                </div>
 
-                    {password && (
-                        <div className="result-section">
-                            <div className="password-display">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    value={password}
-                                    readOnly
-                                    className="password-field"
+                <div className="specimen">
+                    <div className="specimen-top">
+                        <span className="specimen-label">Your password</span>
+                        <div className="specimen-actions">
+                            <button
+                                className="icon-btn"
+                                onClick={() => setShowPassword(!showPassword)}
+                                title={
+                                    showPassword
+                                        ? "Hide password"
+                                        : "Show password"
+                                }
+                            >
+                                {showPassword ? (
+                                    <EyeOff size={16} />
+                                ) : (
+                                    <Eye size={16} />
+                                )}
+                            </button>
+                            <button
+                                className="icon-btn"
+                                onClick={generatePassword}
+                                title="Regenerate"
+                            >
+                                <RefreshCw
+                                    size={16}
+                                    className={isGenerating ? "spinning" : ""}
                                 />
-                                <div className="password-actions">
-                                    <button
-                                        onClick={() =>
-                                            setShowPassword(!showPassword)
-                                        }
-                                        className="action-button"
-                                        title={
-                                            showPassword
-                                                ? "Hide password"
-                                                : "Show password"
-                                        }
-                                    >
-                                        {showPassword ? (
-                                            <EyeOff size={18} />
-                                        ) : (
-                                            <Eye size={18} />
-                                        )}
-                                    </button>
-                                    <button
-                                        onClick={copyPassword}
-                                        className={`action-button copy-button ${copied ? "copied" : ""}`}
-                                        title="Copy password"
-                                    >
-                                        {copied ? (
-                                            <Check size={18} />
-                                        ) : (
-                                            <Copy size={18} />
-                                        )}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="password-stats">
-                                <div className="stat-item">
-                                    <span className="stat-label">Length</span>
-                                    <span className="stat-value">
-                                        {password.length}
-                                    </span>
-                                </div>
-                                <div className="stat-divider"></div>
-                                <div className="stat-item">
-                                    <span className="stat-label">Entropy</span>
-                                    <span className="stat-value">
-                                        {entropy} bits
-                                    </span>
-                                </div>
-                                <div className="stat-divider"></div>
-                                <div className="stat-item">
-                                    <span className="stat-label">Strength</span>
-                                    <span
-                                        className="stat-value"
-                                        style={{ color: getStrengthColor(password.length) }}
-                                    >
-                                        {getStrengthText(password.length)}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </main>
-
-                <footer className="app-footer">
-                    <div className="footer-features">
-                        <div className="feature-item">
-                            <Shield size={16} />
-                            <span>Cryptographically Secure</span>
-                        </div>
-                        <div className="feature-item">
-                            <Lock size={16} />
-                            <span>Never Stored</span>
-                        </div>
-                        <div className="feature-item">
-                            <Zap size={16} />
-                            <span>Instant Generation</span>
+                            </button>
+                            <button
+                                className={`icon-btn ${copied ? "copied" : ""}`}
+                                onClick={copyPassword}
+                                title="Copy password"
+                            >
+                                {copied ? (
+                                    <Check size={16} />
+                                ) : (
+                                    <Copy size={16} />
+                                )}
+                            </button>
                         </div>
                     </div>
-                </footer>
+                    {password ? (
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            readOnly
+                            className="specimen-field"
+                        />
+                    ) : (
+                        <div
+                            className="specimen-placeholder"
+                            style={{ letterSpacing: "1.5px" }}
+                        >
+                            · · · · · · · · · · · ·
+                        </div>
+                    )}
+                </div>
+
+                <div className="gauge-row">
+                    <div
+                        className="gauge"
+                        style={{
+                            background: `conic-gradient(${strengthColor} ${gaugeDeg}deg, #19222f ${gaugeDeg}deg)`,
+                        }}
+                    >
+                        <div className="gauge-inner">
+                            <span className="gauge-value">{entropy || 0}</span>
+                            <span className="gauge-unit">bits</span>
+                        </div>
+                    </div>
+                    <div className="meta-list">
+                        <div className="meta-row">
+                            <span className="meta-row-label">Strength</span>
+                            <span
+                                className="meta-row-value"
+                                style={{ color: strengthColor }}
+                            >
+                                {strengthText}
+                            </span>
+                        </div>
+                        <div className="meta-divider" />
+                        <div className="meta-row">
+                            <span className="meta-row-label">Length</span>
+                            <span className="meta-row-value">
+                                {password.length || "—"}
+                            </span>
+                        </div>
+                        <div className="meta-divider" />
+                        <div className="meta-row">
+                            <span className="meta-row-label">
+                                Time to crack
+                            </span>
+                            <span className="meta-row-value meta-row-value-accent">
+                                {getCrackTime(entropy)}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {passwordType === "easytype" && (
+                    <div className="info-callout">
+                        <Info size={16} />
+                        <span>
+                            20-character syllable pattern — easy to type on any
+                            device, no manager needed.
+                        </span>
+                    </div>
+                )}
+
+                {passwordType === "maxsecurity" && (
+                    <div className="max-controls">
+                        <div className="length-presets">
+                            {LENGTH_PRESETS.map((n) => (
+                                <button
+                                    key={n}
+                                    className={`preset ${length === n ? "active" : ""}`}
+                                    onClick={() => setLength(n)}
+                                >
+                                    {n}
+                                </button>
+                            ))}
+                        </div>
+                        <input
+                            type="range"
+                            min="8"
+                            max="32"
+                            value={length}
+                            onChange={(e) => setLength(Number(e.target.value))}
+                            className="length-slider"
+                            style={{
+                                background: `linear-gradient(to right, ${sliderColor} 0%, ${sliderColor} ${sliderPct}%, #1b2433 ${sliderPct}%, #1b2433 100%)`,
+                            }}
+                        />
+                        <label className="special-toggle">
+                            <input
+                                type="checkbox"
+                                checked={includeSpecial}
+                                onChange={(e) =>
+                                    setIncludeSpecial(e.target.checked)
+                                }
+                            />
+                            <span className="toggle-text">
+                                <span className="toggle-title">
+                                    Include special characters
+                                </span>
+                                <span className="toggle-hint">
+                                    !@#$%^&amp;*()_+-=[]
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+                )}
+
+                <button
+                    className="generate-btn"
+                    onClick={generatePassword}
+                    disabled={isGenerating}
+                >
+                    <Zap size={18} className={isGenerating ? "spinning" : ""} />
+                    {isGenerating ? "Generating…" : "Generate password"}
+                </button>
             </div>
 
             {alert.show && (
-                <div className={`notification notification-${alert.type}`}>
-                    <div className="notification-content">
-                        {alert.type === "success" && <Check size={18} />}
-                        <span>{alert.message}</span>
-                    </div>
+                <div className={`popup-toast toast-${alert.type}`}>
+                    <Check size={17} />
+                    <span>{alert.message}</span>
                 </div>
             )}
         </div>
